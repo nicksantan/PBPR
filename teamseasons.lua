@@ -30,8 +30,8 @@ function scene:enterScene( event )
 
 	local group = self.view
 	local widget = require "widget"
-currentScene = "teamseasons" .. ",".. whichTeam;
-
+    currentScene = "teamseasons" .. ",".. whichTeam;
+    --a test change
 	local listOptions = {
         top = 44,
         height = 386,
