@@ -33,7 +33,7 @@ end
 
 -- Called immediately after scene has moved onscreen:
 function scene:enterScene( event )
-manageBackButton();
+
 	local group = self.view
 	--list.isVisible = true;
 	currentScene = "alphabet";
@@ -157,7 +157,7 @@ manageBackButton();
 	--create the NavBar with the appropriate title
 	createNavBar("Last Name");
  
- 
+ displayBackButton();
  
  
  	
@@ -180,6 +180,8 @@ function scene:exitScene( event )
 	--lastScene = "teams";
 	list:removeSelf()
  	list = nil
+ --	backButton:removeSelf();
+ --	backButton = nil;
 	--list.isVisible = false;
 		
 end

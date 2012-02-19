@@ -85,7 +85,7 @@ function createNavBar(title)
  
  -- create a gradient for the top-half of the toolbar
 --local toolbarGradient = graphics.newGradient( {168, 181, 198, 255 }, {139, 157, 180, 255}, "down" )
-manageBackButton();
+
 -- create toolbar to go at the top of the screen
  navBar = widget.newTabBar{
 	top = 0,
@@ -100,128 +100,7 @@ manageBackButton();
 	navHeader.x = display.contentWidth*.5
 	navHeader.y = navBar.y
 	
-	local onButtonEvent = function (event )
-	
 
-        if event.phase == "release" then
-           
-           --go to the fourth scene and then shift all the scenes
-           
-            local t ={};
-            local h = historyList[11];
-            print("okay, we're moving back in time to " .. h);
-            t = split(h);
-            print (#t);
-  
-            if (#t == 1) then
-                print(type(t[1]));
-                if (t[1] == "nuller") then
-                    print ("it's nuller");
-                elseif (t[1] == "records") then
-                tabBar:pressButton( 3, false )
-                
-                elseif (t[1] == "alphabet") then
-                tabBar:pressButton( 1 , false)
-                
-                elseif (t[1] == "teams") then
-                tabBar:pressButton( 2, false )
-                
-                end
-                
-                if (t[1] ~= "nuller") then
-                storyboard.gotoScene( t[1] )
-                end
-            end
-            
-            if(#t==3) then -- this must be a teamseason page
-            --set whichTeam ? 
-            whichTeam = t[2];
-            whichTeamSeason = t[3];
-            
-            storyboard.gotoScene(t[1]);
-            
-            end
-                if(#t==2) then -- this could be a number of things
-                print("#t is 2");
-                    if (t[1] == "player_page") then
-                    print("navigating back to a player page");
-                        --t[2] is going to be whichPlayer
-                        print("whichPlayer was "..whichPlayer.." being changed to "..t[2]);
-                        whichPlayer = t[2];
-                        storyboard.gotoScene(t[1]);
-                    
-                    elseif (t[1] == "players") then
-                      print("navigating back to the list of players for a letter");
-                        whichLetter = t[2];
-                        storyboard.gotoScene(t[1]);
-                        
-                    elseif (t[1] == "teamseasons") then
-                    print("navigating back to the list of teamseasons");
-                        whichTeam = t[2];
-                        storyboard.gotoScene(t[1]);
-                    end
-                end
-                
-
-            
-            
-           historyList[11] = historyList[10];
-           historyList[10] = historyList[9];
-            historyList[9] = historyList[8];
-            historyList[8] = historyList[7];
-         
-            historyList[7] = historyList[6];
-            historyList[6] = historyList[5];
-            historyList[5] = historyList[4];
-            historyList[4] = historyList[3];
-            historyList[3] = historyList[2];
-            historyList[2] = historyList[1];
- 
-            historyList[1] = "nuller";
-   
-           print("now, oldest spot is " .. historyList[1])
-             print(historyList[2]);
-   print(historyList[3]);
-    print(historyList[4]);
-    print(historyList[5]);
-    print(historyList[6]);
-    print(historyList[7]);
-    print(historyList[8]);
-    print(historyList[9]);
-    print(historyList[10]);
-    print(historyList[11]);
-           
-       manageBackButton();    
-        
-         
-           end
-        end
-    
- 	
- 	--create the backButton. This should also be a global function in main.lua
-print ("back button?")
-print (backButtonOn);
-if (backButtonOn) then
-print ("back button is on like donkey kong");
-   local widget = require "widget"
-   backButton = widget.newButton{
-      id = "backButton",
-      left =5,
-      --top = 6,
-      style = "backSmall",
-      --  width = 150, height = 28,
-      cornerRadius = 8,
-      label = "Back",
-      onEvent = onButtonEvent
-   }
-   backButton.y = navBar.y
-   
-elseif (backButtonOn == false) then
-backButton = display.newRetinaText( "blah", 18, 0, "Helvetica-Bold", 12 )
-print("back button should be off");
-	backButton.isVisible = false;
-
-end
 end
 	
 --This function properly formats a year date (e.g. 1982) to shorthand (e.g. 82). It currently adds one to the year to return the 'Next season'
@@ -371,15 +250,129 @@ print("history updated, page left was just: " .. pageLeft);
 
 end
 
-function manageBackButton()
+function displayBackButton()
+	local onButtonEvent = function (event )
+	
 
-if (historyList[11] == "nuller") then
-backButtonOn = false;
-print("backButtonON set to false");
-backButton.visible = false;
+        if event.phase == "release" then
+           
+           --go to the fourth scene and then shift all the scenes
+           
+            local t ={};
+            local h = historyList[11];
+            print("okay, we're moving back in time to " .. h);
+            t = split(h);
+            print (#t);
+  
+            if (#t == 1) then
+                print(type(t[1]));
+                if (t[1] == "nuller") then
+                    print ("it's nuller");
+                elseif (t[1] == "records") then
+                tabBar:pressButton( 3, false )
+                
+                elseif (t[1] == "alphabet") then
+                tabBar:pressButton( 1 , false)
+                
+                elseif (t[1] == "teams") then
+                tabBar:pressButton( 2, false )
+                
+                end
+                
+                if (t[1] ~= "nuller") then
+                storyboard.gotoScene( t[1] )
+                end
+            end
+            
+            if(#t==3) then -- this must be a teamseason page
+            --set whichTeam ? 
+            whichTeam = t[2];
+            whichTeamSeason = t[3];
+            
+            storyboard.gotoScene(t[1]);
+            
+            end
+                if(#t==2) then -- this could be a number of things
+                print("#t is 2");
+                    if (t[1] == "player_page") then
+                    print("navigating back to a player page");
+                        --t[2] is going to be whichPlayer
+                        print("whichPlayer was "..whichPlayer.." being changed to "..t[2]);
+                        whichPlayer = t[2];
+                        storyboard.gotoScene(t[1]);
+                    
+                    elseif (t[1] == "players") then
+                      print("navigating back to the list of players for a letter");
+                        whichLetter = t[2];
+                        storyboard.gotoScene(t[1]);
+                        
+                    elseif (t[1] == "teamseasons") then
+                    print("navigating back to the list of teamseasons");
+                        whichTeam = t[2];
+                        storyboard.gotoScene(t[1]);
+                    end
+                end
+                
+
+            
+            
+           historyList[11] = historyList[10];
+           historyList[10] = historyList[9];
+            historyList[9] = historyList[8];
+            historyList[8] = historyList[7];
+         
+            historyList[7] = historyList[6];
+            historyList[6] = historyList[5];
+            historyList[5] = historyList[4];
+            historyList[4] = historyList[3];
+            historyList[3] = historyList[2];
+            historyList[2] = historyList[1];
+ 
+            historyList[1] = "nuller";
+   
+           print("now, oldest spot is " .. historyList[1])
+             print(historyList[2]);
+   print(historyList[3]);
+    print(historyList[4]);
+    print(historyList[5]);
+    print(historyList[6]);
+    print(historyList[7]);
+    print(historyList[8]);
+    print(historyList[9]);
+    print(historyList[10]);
+    print(historyList[11]);
+           
+       
+        if (historyList[11] == "nuller") then
+              backButton:removeSelf();
+           backButton = nil;
+           end
+           end
+      
+        end
+    
+ 	
+ 	--create the backButton. This should also be a global function in main.lua
+
+if (historyList[11] ~= "nuller") then
+print ("back button is on like donkey kong");
+   local widget = require "widget"
+   backButton = widget.newButton{
+      id = "backButton",
+      left =5,
+      --top = 6,
+      style = "backSmall",
+      --  width = 150, height = 28,
+      cornerRadius = 8,
+      label = "Back",
+      onEvent = onButtonEvent
+   }
+   backButton.y = navBar.y
+   
 else
-backButtonOn = true;
-print("backButtonON set to true");
+backButton = display.newRetinaText( "blah", 18, 0, "Helvetica-Bold", 12 )
+print("back button should be off");
+	backButton.isVisible = false;
 
 end
 end

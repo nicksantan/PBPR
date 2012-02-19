@@ -27,7 +27,7 @@ end
 
 -- Called immediately after scene has moved onscreen:
 function scene:enterScene( event )
-manageBackButton();
+
 	local group = self.view
 	local widget = require "widget"
 currentScene = "teamseason" .. ","..whichTeam ..","..whichTeamSeason;
@@ -181,7 +181,7 @@ currentScene = "teamseason" .. ","..whichTeam ..","..whichTeamSeason;
 	local seasonTitle = "'" ..computeNextSeason(whichTeamSeason-1) .. "-"..nextSeason
 	local compTitle = seasonTitle .. " "..teamName
 	createNavBar(compTitle);
-
+displayBackButton();
 	--insert everything into the group to be changed on scene changes
     group:insert(navBar);
     group:insert(navHeader);

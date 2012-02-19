@@ -27,7 +27,7 @@ end
 
 -- Called immediately after scene has moved onscreen:
 function scene:enterScene( event )
-manageBackButton();
+
 	local group = self.view
 	local widget = require "widget"
 currentScene = "player_page" .. "," .. whichPlayer;
@@ -441,7 +441,7 @@ shadow.alpha = 0.45
 	
 	
 	createNavBar(theName);
-
+displayBackButton();
 	--insert everything into the group to be changed on scene changes
     group:insert(navBar);
     group:insert(navHeader);

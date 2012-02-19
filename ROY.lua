@@ -27,7 +27,7 @@ end
 
 -- Called immediately after scene has moved onscreen:
 function scene:enterScene( event )
-manageBackButton();
+
 	local group = self.view
 	local widget = require "widget"
 currentScene = "ROY";
@@ -161,7 +161,7 @@ currentScene = "ROY";
 	--create the NavBar with the appropriate title
 	
 	createNavBar("Rookies of the Year");
-
+displayBackButton();
 	--insert everything into the group to be changed on scene changes
     group:insert(navBar);
     group:insert(navHeader);
