@@ -9,33 +9,28 @@ local storyboard = require( "storyboard" )
 local scene = storyboard.newScene()
 
 -----------------------------------------------------------------------------------------
--- BEGINNING OF YOUR IMPLEMENTATION
 -- 
 -- NOTE: Code outside of listener functions (below) will only be executed once,
 --		 unless storyboard.removeScene() is called.
 -- 
 -----------------------------------------------------------------------------------------
 
-local alphabetArray = { "A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"}
+local alphabetArray = { "A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","Y","Z"}
+
 -- Called when the scene's view does not exist:
 function scene:createScene( event )
 	local group = self.view
 	
-	
-	 local blah = display.newRetinaText( "blah", 18, 0, "Helvetica-Bold", 12 )
+	--Placeholder display object to workaround a bug in the Storyboard API.
+	local blah = display.newRetinaText( "blah", 18, 0, "Helvetica-Bold", 12 )
 	group:insert( blah )
 	blah.isVisible = false;
-	
-	
-
-	
 end
 
 -- Called immediately after scene has moved onscreen:
 function scene:enterScene( event )
 
 	local group = self.view
-	--list.isVisible = true;
 	currentScene = "alphabet";
 	local listOptions = {
         top = 44,
@@ -44,6 +39,7 @@ function scene:enterScene( event )
      -- maskFile = "mask-320x366.png"
      -- maskFile = "320-385-mask.png"
 	}
+ 	
  	local widget = require "widget"
 	list = widget.newTableView( listOptions )
 
@@ -53,23 +49,22 @@ function scene:enterScene( event )
         local rowGroup = event.view
  
         if event.phase == "press" then
-                if not row.isCategory then rowGroup.alpha = 0.5;
+            if not row.isCategory then rowGroup.alpha = 0.5;
                
-                end
+        end
  
         elseif event.phase == "release" then
  
-                if not row.isCategory then
-                           updateHistory(currentScene);
-                        -- reRender property tells row to refresh if still onScreen when content moves
-                        row.reRender = true
-                        print( "You touched row #" .. event.index )
-                        --set the global variable that lets the program know which letter is being viewed.
-                        whichLetter = event.target.id;
-            
-                        --goto the Player's page
-                        storyboard.gotoScene( "players" );
-                end
+            if not row.isCategory then
+                updateHistory(currentScene);
+                -- reRender property tells row to refresh if still onScreen when content moves
+                row.reRender = true
+                print( "You touched row #" .. event.index )
+                --set the global variable that lets the program know which letter is being viewed.
+                whichLetter = event.target.id;
+                --go to the Player's page
+                storyboard.gotoScene( "players" );
+            end
         end
  
         return true
@@ -84,39 +79,20 @@ function scene:enterScene( event )
         local lastname;
         local teamName;
         local compName;
-        --look up each team and extract some pertinent info to render. 
- 		--for row in db:nrows("SELECT * FROM player_career WHERE ilkid = '"..event.target.id.."'") do
---perhaps extract this earlier?
-		--	teamName = row.name;
-		--	teamLocation = row.location;
-		--	totalTitle = row.location .. " " .. row.name;
-		--firstname = row.firstname;
-	--	lastname = row.lastname
---compName = lastname .. ", " .. firstname
-		-- end
-		 
-		--render the text based on these this info
-		
-		
+
 
        	local text = display.newRetinaText( event.target.id, 18, 0, "Helvetica-Bold", 16 )
         text:setReferencePoint( display.CenterLeftReferencePoint )
         text.y = row.height * 0.5
        	
-       --	local textDate = display.newRetinaText(compDates, 18, 0, -"Helvetica-Bold", 12);
-       -- textDate:setReferencePoint( display.CenterLeftReferencePoint )
-       -- textDate.y = row.height * 0.5
-        
         if not row.isCategory then
                 text.x = 15
                 text:setTextColor( 0 )
-             --   textDate.x = 225;
-              --  textDate:setTextColor(150);
         end
  
         -- must insert everything into event.view (tableView requirement)
         rowGroup:insert( text )
-      --  rowGroup:insert(textDate);
+    
 	end
  
 	-- Create a row for each team, sorted by whether or not the team still exists, the league, and then alphabetically
@@ -124,7 +100,6 @@ function scene:enterScene( event )
 	for j=1,26 do
         local rowHeight, rowColor, lineColor, isCategory, id
  		rowHeight = 40;
- 		
  		id = alphabetArray[j];
 		
 		--This category code is not currently in use.
@@ -156,45 +131,29 @@ function scene:enterScene( event )
 
 	--create the NavBar with the appropriate title
 	createNavBar("Last Name");
- 
- displayBackButton();
- 
- 
- 	
- 
- 
-    -- Change the button's label text:
-  	--  myButton:setLabel( "My Button" )
+    --generate the back button, if applicable.
+    displayBackButton();
 
 	--insert everything into the group to be changed on scene changes
     group:insert(navBar);
     group:insert(navHeader);
     group:insert(backButton )
-    --group:insert(list);
-	
+    --group:insert(list);	
 end
 
 -- Called when scene is about to move offscreen:
 function scene:exitScene( event )
 	local group = self.view
-	--lastScene = "teams";
 	list:removeSelf()
  	list = nil
- --	backButton:removeSelf();
- --	backButton = nil;
-	--list.isVisible = false;
-		
 end
 
 function scene:destroyScene( event )
 	local group = self.view
-	
-	-- INSERT code here (e.g. remove listeners, remove widgets, save state variables, etc.)
-	
 end
 
 -----------------------------------------------------------------------------------------
--- END OF YOUR IMPLEMENTATION
+-- Do not touch below, listeners required for Storyboard API.
 -----------------------------------------------------------------------------------------
 
 -- "createScene" event is dispatched if scene's view does not exist
