@@ -82,13 +82,20 @@ college = "None"
 end
 birthdate = row.birthdate;
  local s = birthdate
-    local t = {}
+ 
+ if (s == "No Data") then
+  birthdate = "No Data";
+  
+  
+else
+local t = {}
 
     for w in string.gmatch(s, "%S+") do
         t[#t+1] = w
     end
 
     birthdate = t[1];
+end
     
 fn = row.firstname;
 print("row.lastname is: " .. row.lastname);
@@ -98,6 +105,7 @@ end
 
 
 posTable = { C="Center", G = "Guard", F="Forward" }
+
 
 -- create a white background to fill screen
 	local bg = display.newRect( 0, 45, 320, 120 )
@@ -113,14 +121,28 @@ posTable = { C="Center", G = "Guard", F="Forward" }
 	nameDisplay.x = 5
 	nameDisplay.y = 50
 	    group:insert(nameDisplay);
-	local posText = posTable[pos];
+	    print (pos);
+	    local posText
+	if (pos == "?") then    
+	posText = " ";
+	else
+	posText = posTable[pos];
+	end
+	
 	local posDisplay = display.newRetinaText( posText, 0, 0, "Helvetica", 18 )
 	posDisplay:setTextColor( 0 )	-- black
 	posDisplay:setReferencePoint( display.TopLeftReferencePoint )
 	posDisplay.x = 320 - posDisplay.width -5
 	posDisplay.y = 50
     group:insert(posDisplay);
-local htwtDisplay = display.newRetinaText( ht .. ", " .. wt .. " lbs.", 0, 0, "Helvetica", 14 )
+    local htwtDisplay = display.newRetinaText( ht .. ", " .. wt .. " lbs.", 0, 0, "Helvetica", 14 )
+   print("height is: " .. ht);  
+   if (ht == "No Data-No Data") then
+htwtDisplay.isVisible = false;
+	else 
+
+	htwtDisplay.isVisible = true;
+	end
 	htwtDisplay:setTextColor( 0 )	-- black
 	htwtDisplay:setReferencePoint( display.TopLeftReferencePoint )
 	htwtDisplay.x = 5
@@ -280,6 +302,11 @@ shadow.alpha = 0.45
         elseif event.phase == "release" then
  
                 if not row.isCategory then
+                
+                --first, check for 'TOT' 
+                  local t = split(event.target.id);
+                  
+                  if (t[2] ~= "TOT") then
                 	updateHistory(currentScene);
                         -- reRender property tells row to refresh if still onScreen when content moves
                         row.reRender = true
@@ -292,6 +319,7 @@ shadow.alpha = 0.45
                			--goto a particular season's roster
                		
                         storyboard.gotoScene( "teamseason" );
+                end
                 end
         end
  
