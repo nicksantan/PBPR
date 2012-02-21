@@ -1,25 +1,18 @@
 -----------------------------------------------------------------------------------------
 --
--- teamseasons.lua
--- The view that appears when a particular team is clicked from the list of teams. A list of a given team's seasons.
+-- player_page.lua
+-- The view that appears when a player has been clicked. Displays their information and season statistics.
 --
 -----------------------------------------------------------------------------------------
+
 local storyboard = require( "storyboard" )
 local scene = storyboard.newScene()
 
------------------------------------------------------------------------------------------
--- BEGINNING OF YOUR IMPLEMENTATION
--- 
--- NOTE: Code outside of listener functions (below) will only be executed once,
---		 unless storyboard.removeScene() is called.
--- 
------------------------------------------------------------------------------------------
-
 -- Called when the scene's view does not exist:
 function scene:createScene( event )
-	local group = self.view
+    local group = self.view
 	
-     local blah = display.newRetinaText( "blah", 18, 0, "Helvetica-Bold", 12 )
+    local blah = display.newRetinaText( "blah", 18, 0, "Helvetica-Bold", 12 )
 	group:insert( blah )
 	blah.isVisible = false;
 
@@ -28,103 +21,95 @@ end
 -- Called immediately after scene has moved onscreen:
 function scene:enterScene( event )
 
-	local group = self.view
+    local group = self.view
 	local widget = require "widget"
-currentScene = "player_page" .. "," .. whichPlayer;
-print (currentScene);
+    currentScene = "player_page" .. "," .. whichPlayer;
+    print (currentScene);
 
+    local gp
+    local pts
+    local rebs
+    local asts
+    local stls
+    local blks
+    local ht
+    local wt
+    local pos
+    local college
+    local ppg;
+    local rpg;
+    local apg;
+    local spg;
+    local bpg;
+    local birthdate;
+    local fn;
+    local ln;
 
---onetime lookup of whichPlayer
---need career gp, points, rebs, assists, steals, blocks
---height, weight, position, college
-local gp
-local pts
-local rebs
-local asts
-local stls
-local blks
-local ht
-local wt
-local pos
-local college
-local ppg;
-local rpg;
-local apg;
-local spg;
-local bpg;
-local birthdate;
-local fn;
-local ln;
+    for row in db:nrows("SELECT * FROM player_career WHERE ilkid = '"..whichPlayer.."'" ) do
 
-for row in db:nrows("SELECT * FROM player_career WHERE ilkid = '"..whichPlayer.."'" ) do
-gp = row.gp;
-pts = row.pts
-rebs = row.reb
-asts = row.asts
-stls = row.stl
-blks = row.blk
-ppg = formatStat(pts/gp,2);
-rpg = formatStat(rebs/gp,2);
-apg = formatStat(asts/gp,2)
-spg = formatStat(stls/gp,2)
-bpg = formatStat(blks/gp,2)
-
-
-end
-for row in db:nrows("SELECT * FROM players WHERE ilkid = '"..whichPlayer.."'" ) do
-pos = row.position;
-ht = row.h_feet .."-".. row.h_inches
-wt = row.weight
-college = row.college
-print (college)
-if (college == "NULL") then
-college = "None"
-end
-birthdate = row.birthdate;
- local s = birthdate
- 
- if (s == "No Data") then
-  birthdate = "No Data";
-  
-  
-else
-local t = {}
-
-    for w in string.gmatch(s, "%S+") do
-        t[#t+1] = w
+        gp = row.gp;
+        pts = row.pts
+        rebs = row.reb
+        asts = row.asts
+        stls = row.stl
+        blks = row.blk
+        ppg = formatStat(pts/gp,2);
+        rpg = formatStat(rebs/gp,2);
+        apg = formatStat(asts/gp,2)
+        spg = formatStat(stls/gp,2)
+        bpg = formatStat(blks/gp,2)
     end
 
-    birthdate = t[1];
-end
+    for row in db:nrows("SELECT * FROM players WHERE ilkid = '"..whichPlayer.."'" ) do
+        pos = row.position;
+        ht = row.h_feet .."-".. row.h_inches
+        wt = row.weight
+        college = row.college
+
+        if (college == "NULL") then
+            college = "None"
+        end
+
+        birthdate = row.birthdate;
+        local s = birthdate
+ 
+        if (s == "No Data") then
+            birthdate = "No Data";
+        else
+
+            local t = {}
+            for w in string.gmatch(s, "%S+") do
+                t[#t+1] = w
+            end
+        birthdate = t[1];
+        end
     
-fn = row.firstname;
-print("row.lastname is: " .. row.lastname);
-print("talking about "..whichPlayer);
-ln = row.lastname;
-end
+        fn = row.firstname;
+        ln = row.lastname;
+    end
 
 
-posTable = { C="Center", G = "Guard", F="Forward" }
+    posTable = { C="Center", G = "Guard", F="Forward" }
 
-
--- create a white background to fill screen
+    -- Create a white background to fill screen
+	
 	local bg = display.newRect( 0, 45, 320, 120 )
 	bg:setFillColor( 255 )	-- white
-	    group:insert(bg);
-	-- create some text
-	print("fn is :" .. fn);
-	print("ln is :" .. ln);
+	group:insert(bg);
 	local compName = fn .. " " .. ln;
 	local nameDisplay = display.newRetinaText( compName, 0, 0, "Helvetica-Bold", 18 )
+	
 	nameDisplay:setTextColor( 0 )	-- black
 	nameDisplay:setReferencePoint( display.TopLeftReferencePoint )
 	nameDisplay.x = 5
 	nameDisplay.y = 50
-	    group:insert(nameDisplay);
-	    print (pos);
-	    local posText
+	
+	group:insert(nameDisplay);
+	
+	local posText
+	
 	if (pos == "?") then    
-	posText = " ";
+	    posText = " ";
 	else
 	posText = posTable[pos];
 	end

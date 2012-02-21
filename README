@@ -1,0 +1,13 @@
+---
+Pro Basketball Pocket Reference (PBPR) by Nick Santaniello
+---
+
+The Pro Basketball Pocket Reference (PBPR for short) is a simple, easy-to-use sports reference app for iOS devices.
+
+It's written in Lua, intended for use with the Corona SDK. 
+
+The main program is main.lua. From there, alternate 'screens' are summoned and take the form of additional '.lua' files such as players.lua, teams.lua, etc.
+
+Aside from using the Corona SDK, PBPR also uses Corona's 'Storyboard API' for changing scenes easily and Corona's widget library to provide native iOS elements.
+
+

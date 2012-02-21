@@ -7,22 +7,13 @@
 local storyboard = require( "storyboard" )
 local scene = storyboard.newScene()
 
------------------------------------------------------------------------------------------
--- BEGINNING OF YOUR IMPLEMENTATION
--- 
--- NOTE: Code outside of listener functions (below) will only be executed once,
---		 unless storyboard.removeScene() is called.
--- 
------------------------------------------------------------------------------------------
-
 -- Called when the scene's view does not exist:
 function scene:createScene( event )
 	local group = self.view
 	
-     local blah = display.newRetinaText( "blah", 18, 0, "Helvetica-Bold", 12 )
+    local blah = display.newRetinaText( "blah", 18, 0, "Helvetica-Bold", 12 )
 	group:insert( blah )
 	blah.isVisible = false;
-
 end
 
 -- Called immediately after scene has moved onscreen:
@@ -30,7 +21,7 @@ function scene:enterScene( event )
 
 	local group = self.view
 	local widget = require "widget"
-currentScene = "ROY";
+    currentScene = "ROY";
 
 	local listOptions = {
         top = 44,
@@ -38,7 +29,7 @@ currentScene = "ROY";
         maskFile = "mask-386.png";
 	}
  
-	mvpList = widget.newTableView( listOptions )
+	theList = widget.newTableView( listOptions )
 
 	-- onEvent listener for the tableView
 	local function onRowTouch( event )
@@ -51,18 +42,18 @@ currentScene = "ROY";
                 end
  
         elseif event.phase == "release" then
- print (whichPlayer);
+                print (whichPlayer);
                 if not row.isCategory then
-                updateHistory(currentScene);
-                        -- reRender property tells row to refresh if still onScreen when content moves
-                        row.reRender = true
-                         local t
-       t = split(event.target.id);
+                    updateHistory(currentScene);
+                    -- reRender property tells row to refresh if still onScreen when content moves
+                    row.reRender = true
+                    local t
+                    t = split(event.target.id);
        
-       whichPlayer = t[1]
-               			--goto a particular player page
-                        storyboard.gotoScene( "player_page" );
-                end
+                whichPlayer = t[1]
+               	--goto a particular player page
+                storyboard.gotoScene( "player_page" );
+        end
         end
  
  	       return true
@@ -143,7 +134,7 @@ currentScene = "ROY";
 	id = ilkid .. "," .. year.. "," .. playerFirstName .. " " .. playerLastName;
    -- print(string.sub(id,11,14))
         -- function below is responsible for creating the row
-       mvpList:insertRow{
+       theList:insertRow{
                 onEvent=onRowTouch,
                 id=id,
                 onRender=onRowRender,
@@ -172,8 +163,8 @@ end
 
 function scene:exitScene( event )
 	local group = self.view
- 	mvpList:removeSelf()
-  	mvpList = nil
+ 	theList:removeSelf()
+  	theList = nil
 end
 
 function scene:destroyScene( event )
