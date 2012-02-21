@@ -19,7 +19,8 @@ local scene = storyboard.newScene()
 function scene:createScene( event )
 	local group = self.view
 	
-     local blah = display.newRetinaText( "blah", 18, 0, "Helvetica-Bold", 12 )
+	-- This is a placeholder needed to work around a bug in the Storyboard API.
+    local blah = display.newRetinaText( "blah", 18, 0, "Helvetica-Bold", 12 )
 	group:insert( blah )
 	blah.isVisible = false;
 
@@ -30,7 +31,7 @@ function scene:enterScene( event )
 
 	local group = self.view
 	local widget = require "widget"
-currentScene = "DPOY";
+    currentScene = "DPOY";
 
 	local listOptions = {
         top = 44,
@@ -38,7 +39,7 @@ currentScene = "DPOY";
         maskFile = "mask-386.png";
 	}
  
-	mvpList = widget.newTableView( listOptions )
+	theList = widget.newTableView( listOptions )
 
 	-- onEvent listener for the tableView
 	local function onRowTouch( event )
@@ -46,64 +47,45 @@ currentScene = "DPOY";
         local rowGroup = event.view
  
         if event.phase == "press" then
-                if not row.isCategory then rowGroup.alpha = 0.5;
+            if not row.isCategory then rowGroup.alpha = 0.5;
                
-                end
+            end
  
-        elseif event.phase == "release" then
- print (whichPlayer);
+            elseif event.phase == "release" then
+
                 if not row.isCategory then
-                		updateHistory(currentScene);
-                        -- reRender property tells row to refresh if still onScreen when content moves
-                        row.reRender = true
-                        local t
-                        t = split(event.target.id);
-       
-                        whichPlayer = t[1]
-               			--goto a particular player page
-               	
-                        storyboard.gotoScene( "player_page" );
+               	    updateHistory(currentScene);
+                    -- reRender property tells row to refresh if still onScreen when content moves
+                    row.reRender = true
+                    
+                    -- Decompact the id field to determine whichPlayer's page to navigate to.
+                    local t
+                    t = split(event.target.id);
+                    whichPlayer = t[1]
+               		
+               		-- Go to a particular player page
+               	    storyboard.gotoScene( "player_page" );
                 end
-        end
+            end
+            return true
+	    end
  
- 	       return true
-	end
- 
-	-- onRender listener for the tableView that renders each row
-	local function onRowRender( event )
+	    -- onRender listener for the tableView that renders each row
+	    local function onRowRender( event )
         local row = event.target
         local rowGroup = event.view
         
-       --decompact here?
-       local t
-       t = split(event.target.id);
-       
-       local year = t[2]
-      
-       local compYear = year .. "-" .. computeNextSeason(year);
-       local name = t[3]
-	--special case for games being under ten
---	if (gp < 10) then
---	gp = " "..gp;
---	end
---	ppg = formatStat(row.pts / row.gp,2);
---	rpg = formatStat(row.reb / row.gp,2);
---	apg = formatStat(row.asts / row.gp,2);
---	spg = formatStat(row.stl / row.gp,1);
---	bpg = formatStat(row.blk / row.gp,1);
-	
-	 
-
---	end
-		
---	local totalName = playerFirstName .. " " .. playerLastName;
-	--		losses = row.lost;
-	--print (totalName);	
---	local compStats = gp .. " gp " .. ppg .. " ppg " .. rpg .. " rpg " .. apg .. " apg ";
+        -- Decompact id field to get the row's information.
+        local t
+        t = split(event.target.id);
+        local year = t[2]
+        local compYear = year .. "-" .. computeNextSeason(year);
+        local name = t[3]
 	
    	 	local textDate = display.newRetinaText( compYear, 18, 0, "Helvetica-Bold", 18 )
     	textDate:setReferencePoint( display.CenterLeftReferencePoint )
     	textDate.y = row.height * 0.5
+    	
     	local textName = display.newRetinaText(name, 18, 0, "Helvetica-Bold", 18);
     	textName:setReferencePoint( display.CenterLeftReferencePoint )
     	textName.y = row.height * 0.5
@@ -111,48 +93,41 @@ currentScene = "DPOY";
     	if not row.isCategory then
     		textDate.x = 10
     		textDate:setTextColor( 100 )
+    		
     		textName.x = 120 ;
      		textName:setTextColor(0);
     	end
  
-        -- must insert everything into event.view: (tableView requirement)
+        -- Must insert everything into event.view: (tableView requirement)
         rowGroup:insert( textDate )
    		rowGroup:insert(textName);
 	end
  
-	-- Create a row for each Player in the MVP list
-	 local playerFirstName;
-        local playerLastName;
-        local gp;
-        local ppg;
-        local rpg;
-        local apg;
-        local spg;
-        local bpg;
-        local ilkid;
-        local year;   
-        local id;
-        --this is where you'll look up a player's name and stats
-		
-		for row in db:nrows("SELECT * FROM records_DPOY ORDER BY year DESC") do
+	-- Create a row for each player in the DPOY list
+	local playerFirstName;
+    local playerLastName;
+    local ilkid;
+    local year;   
+    local id;
+
+	-- Go through the list of DPOYs and create a row for each
+	for row in db:nrows("SELECT * FROM records_DPOY ORDER BY year DESC") do
 
 	playerFirstName = row.firstname;
 	playerLastName = row.lastname;
-
-	ilkid = row.ilkid;
+    ilkid = row.ilkid;
 	year = row.year;
 	id = ilkid .. "," .. year.. "," .. playerFirstName .. " " .. playerLastName;
-   -- print(string.sub(id,11,14))
-        -- function below is responsible for creating the row
-       mvpList:insertRow{
-                onEvent=onRowTouch,
-                id=id,
-                onRender=onRowRender,
-                height=rowHeight,
-                isCategory=isCategory,
-                rowColor=rowColor,
-                lineColor=lineColor
-        }
+   
+    theList:insertRow{
+        onEvent=onRowTouch,
+        id=id,
+        onRender=onRowRender,
+        height=rowHeight,
+        isCategory=isCategory,
+        rowColor=rowColor,
+        lineColor=lineColor
+    }
 	end
 
 	-- all objects must be added to group (e.g. self.view) but are not in this case since widgets act problematically with group.insert
@@ -160,30 +135,30 @@ currentScene = "DPOY";
 	--	group:insert( title )
 
 	--create the NavBar with the appropriate title
-	
 	createNavBar("Defensive Player / Year");
-displayBackButton();
+    displayBackButton();
+	
 	--insert everything into the group to be changed on scene changes
     group:insert(navBar);
     group:insert(navHeader);
     group:insert(backButton)
+
 end
 
 -- Called when scene is about to move offscreen:
 
 function scene:exitScene( event )
 	local group = self.view
- 	mvpList:removeSelf()
-  	mvpList = nil
+ 	theList:removeSelf()
+  	theList = nil
 end
 
 function scene:destroyScene( event )
 	local group = self.view
-	
 end
 
 -----------------------------------------------------------------------------------------
--- END OF YOUR IMPLEMENTATION
+-- Do not touch below, listeners required for Storyboard API.
 -----------------------------------------------------------------------------------------
 
 -- "createScene" event is dispatched if scene's view does not exist

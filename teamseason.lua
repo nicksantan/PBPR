@@ -99,7 +99,7 @@ currentScene = "teamseason" .. ","..whichTeam ..","..whichTeamSeason;
     	if not row.isCategory then
     		text.x = 10
     		text:setTextColor( 0 )
-    		textStats.x = 125 ;
+    		textStats.x = 124 ;
      		textStats:setTextColor(0);
     	end
  

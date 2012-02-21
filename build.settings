@@ -10,13 +10,20 @@ settings = {
 	
 	iphone = {
 		plist = {
+		CFBundleIconFile = "Icon.png",
+             CFBundleIconFiles = {
+                    "Icon.png" , 
+                    "Icon@2x.png" , 
+                    "Icon-72.png" , 
+             },
 			UIStatusBarHidden = false,
-			UIPrerenderedIcon = true, -- set to false for "shine" overlay
+			UIPrerenderedIcon = false, -- set to false for "shine" overlay
 			UIApplicationExitsOnSuspend = true,
 			UIAppFonts = 
                         {
                                 "Monaco.dfont"
                         },
+                        
 		}
 	},
 	
