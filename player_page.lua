@@ -1,7 +1,7 @@
 -----------------------------------------------------------------------------------------
 --
 -- player_page.lua
--- The view that appears when a player has been clicked. Displays their information and season statistics.
+-- The view that appears when a player has been clicked. Displays their career information and season statistics.
 --
 -----------------------------------------------------------------------------------------
 
@@ -12,6 +12,7 @@ local scene = storyboard.newScene()
 function scene:createScene( event )
     local group = self.view
 	
+	-- A placeholder
     local blah = display.newRetinaText( "blah", 18, 0, "Helvetica-Bold", 12 )
 	group:insert( blah )
 	blah.isVisible = false;
@@ -23,9 +24,14 @@ function scene:enterScene( event )
 
     local group = self.view
 	local widget = require "widget"
+    
+    -- Define the current scene
     currentScene = "player_page" .. "," .. whichPlayer;
     print (currentScene);
 
+    
+    -- Create some variables to be displayed on screen
+    
     local gp
     local pts
     local rebs
@@ -45,6 +51,8 @@ function scene:enterScene( event )
     local fn;
     local ln;
 
+    -- Calculate some career totals and averages by pulling from the player_career table
+    
     for row in db:nrows("SELECT * FROM player_career WHERE ilkid = '"..whichPlayer.."'" ) do
 
         gp = row.gp;
@@ -58,25 +66,32 @@ function scene:enterScene( event )
         apg = formatStat(asts/gp,2)
         spg = formatStat(stls/gp,2)
         bpg = formatStat(blks/gp,2)
+    
     end
 
+    -- Pull some vital information (e.g. height, weight, college) from the players table
+    
     for row in db:nrows("SELECT * FROM players WHERE ilkid = '"..whichPlayer.."'" ) do
         pos = row.position;
         ht = row.h_feet .."-".. row.h_inches
         wt = row.weight
         college = row.college
-
+        
+        -- If the player didn't go to college, replace college text to be "None"
+        
         if (college == "NULL") then
             college = "None"
         end
 
         birthdate = row.birthdate;
         local s = birthdate
- 
+        
+        -- Special case for No Data (right now, Rookies)
+        
         if (s == "No Data") then
             birthdate = "No Data";
         else
-
+            --Convert the birthday into the appopriate format (we're stripping a bunch of empty 'time' information from the table)
             local t = {}
             for w in string.gmatch(s, "%S+") do
                 t[#t+1] = w
@@ -89,6 +104,8 @@ function scene:enterScene( event )
     end
 
 
+    -- Create a key to translate position data to their full names
+    
     posTable = { C="Center", G = "Guard", F="Forward" }
 
     -- Create a white background to fill screen
@@ -96,7 +113,8 @@ function scene:enterScene( event )
 	local bg = display.newRect( 0, 45, 320, 120 )
 	bg:setFillColor( 255 )	-- white
 	group:insert(bg);
-	local compName = fn .. " " .. ln;
+	
+    local compName = fn .. " " .. ln;
 	local nameDisplay = display.newRetinaText( compName, 0, 0, "Helvetica-Bold", 18 )
 	
 	nameDisplay:setTextColor( 0 )	-- black
@@ -106,7 +124,11 @@ function scene:enterScene( event )
 	
 	group:insert(nameDisplay);
 	
+	
+	
 	local posText
+	
+	-- Special case for no position listed (Rookies)
 	
 	if (pos == "?") then    
 	    posText = " ";
@@ -121,157 +143,183 @@ function scene:enterScene( event )
 	posDisplay.y = 50
     group:insert(posDisplay);
     local htwtDisplay = display.newRetinaText( ht .. ", " .. wt .. " lbs.", 0, 0, "Helvetica", 14 )
-   print("height is: " .. ht);  
-   if (ht == "No Data-No Data") then
-htwtDisplay.isVisible = false;
+    print("height is: " .. ht);  
+    
+    -- Special case for no data for HT or WT (Rookies)
+    if (ht == "No Data-No Data") then   
+        -- For now, just hide that field.
+        htwtDisplay.isVisible = false;
 	else 
-
-	htwtDisplay.isVisible = true;
+	    htwtDisplay.isVisible = true;
 	end
+	
 	htwtDisplay:setTextColor( 0 )	-- black
 	htwtDisplay:setReferencePoint( display.TopLeftReferencePoint )
 	htwtDisplay.x = 5
 	htwtDisplay.y = nameDisplay.y + nameDisplay.height + 5;
-	    group:insert(htwtDisplay);
+	group:insert(htwtDisplay);
+	
 	local bornDisplay = display.newRetinaText( "Born: " .. birthdate, 0, 0, "Helvetica", 14 )
 	bornDisplay:setTextColor( 0 )	-- black
 	bornDisplay:setReferencePoint( display.TopLeftReferencePoint )
 	bornDisplay.x = 5
 	bornDisplay.y = htwtDisplay.y + htwtDisplay.height + 5;
-	    group:insert(bornDisplay);
+	group:insert(bornDisplay);
+	
 	local collegeDisplay = display.newRetinaText( "College: " .. college, 0, 0, "Helvetica", 14 )
 	collegeDisplay:setTextColor( 0 )	-- black
 	collegeDisplay:setReferencePoint( display.TopLeftReferencePoint )
 	collegeDisplay.x = 5
 	collegeDisplay.y = bornDisplay.y + bornDisplay.height + 5;
     group:insert(collegeDisplay);
-local statBoxBg = display.newRect( 125,  posDisplay.y + posDisplay.height + 5, 320, 33 )
+
+    local statBoxBg = display.newRect( 125,  posDisplay.y + posDisplay.height + 5, 320, 33 )
 	statBoxBg:setFillColor( 230 )	-- lt. grey
     group:insert(statBoxBg);
-local ppgDisplay = display.newRetinaText( ppg, 0, 0, "Helvetica-Bold", 18 )
+
+    local ppgDisplay = display.newRetinaText( ppg, 0, 0, "Helvetica-Bold", 18 )
 	ppgDisplay:setTextColor( 0 )	-- black
 	ppgDisplay:setReferencePoint( display.TopLeftReferencePoint )
 	ppgDisplay.x = 125
 	ppgDisplay.y = posDisplay.y + posDisplay.height + 5;
-	    group:insert(ppgDisplay);
+	group:insert(ppgDisplay);
+	
 	local rpgDisplay = display.newRetinaText( rpg, 0, 0, "Helvetica-Bold", 18 )
 	rpgDisplay:setTextColor( 0 )	-- black
 	rpgDisplay:setReferencePoint( display.TopLeftReferencePoint )
 	rpgDisplay.x = 165
 	rpgDisplay.y = posDisplay.y + posDisplay.height + 5;
-	    group:insert(rpgDisplay);
+	group:insert(rpgDisplay);
+	
 	local apgDisplay = display.newRetinaText( apg, 0, 0, "Helvetica-Bold", 18 )
 	apgDisplay:setTextColor( 0 )	-- black
 	apgDisplay:setReferencePoint( display.TopLeftReferencePoint )
 	apgDisplay.x = 205
 	apgDisplay.y = posDisplay.y + posDisplay.height + 5;
-	    group:insert(apgDisplay);
+	group:insert(apgDisplay);
+	
 	local spgDisplay = display.newRetinaText( spg, 0, 0, "Helvetica-Bold", 18 )
 	spgDisplay:setTextColor( 0 )	-- black
 	spgDisplay:setReferencePoint( display.TopLeftReferencePoint )
 	spgDisplay.x = 245
 	spgDisplay.y = posDisplay.y + posDisplay.height + 5;
-		    group:insert(spgDisplay);
+	group:insert(spgDisplay);
+	
 	local bpgDisplay = display.newRetinaText( bpg, 0, 0, "Helvetica-Bold", 18 )
 	bpgDisplay:setTextColor( 0 )	-- black
 	bpgDisplay:setReferencePoint( display.TopLeftReferencePoint )
 	bpgDisplay.x = 285
 	bpgDisplay.y = posDisplay.y + posDisplay.height + 5;
-        group:insert(bpgDisplay);
-local statMarkerPpg = display.newRetinaText("ppg",0,0,"Helvetica",10)
-statMarkerPpg:setTextColor( 0 )	-- black
+    group:insert(bpgDisplay);
+
+    local statMarkerPpg = display.newRetinaText("ppg",0,0,"Helvetica",10)
+    statMarkerPpg:setTextColor( 0 )	-- black
 	statMarkerPpg:setReferencePoint( display.TopLeftReferencePoint )
 	statMarkerPpg.x = ppgDisplay.x + ppgDisplay.width - statMarkerPpg.width
 	statMarkerPpg.y = ppgDisplay.y + ppgDisplay.height - 5;
-	    group:insert(statMarkerPpg);
-local statMarkerRpg = display.newRetinaText("rpg",0,0,"Helvetica",10)
-statMarkerRpg:setTextColor( 0 )	-- black
+	group:insert(statMarkerPpg);
+
+    local statMarkerRpg = display.newRetinaText("rpg",0,0,"Helvetica",10)
+    statMarkerRpg:setTextColor( 0 )	-- black
 	statMarkerRpg:setReferencePoint( display.TopLeftReferencePoint )
 	statMarkerRpg.x = rpgDisplay.x + rpgDisplay.width - statMarkerRpg.width
 	statMarkerRpg.y = rpgDisplay.y + rpgDisplay.height - 5;
-	    group:insert(statMarkerRpg);
-local statMarkerApg = display.newRetinaText("apg",0,0,"Helvetica",10)
-statMarkerApg:setTextColor( 0 )	-- black
+	group:insert(statMarkerRpg);
+
+    local statMarkerApg = display.newRetinaText("apg",0,0,"Helvetica",10)
+    statMarkerApg:setTextColor( 0 )	-- black
 	statMarkerApg:setReferencePoint( display.TopLeftReferencePoint )
 	statMarkerApg.x = apgDisplay.x + apgDisplay.width - statMarkerApg.width
 	statMarkerApg.y = apgDisplay.y + apgDisplay.height - 5;
-	    group:insert(statMarkerApg);
-local statMarkerSpg = display.newRetinaText("spg",0,0,"Helvetica",10)
-statMarkerSpg:setTextColor( 0 )	-- black
+	group:insert(statMarkerApg);
+
+    local statMarkerSpg = display.newRetinaText("spg",0,0,"Helvetica",10)
+    statMarkerSpg:setTextColor( 0 )	-- black
 	statMarkerSpg:setReferencePoint( display.TopLeftReferencePoint )
 	statMarkerSpg.x = spgDisplay.x + spgDisplay.width - statMarkerSpg.width
 	statMarkerSpg.y = spgDisplay.y + spgDisplay.height - 5;
-	    group:insert(statMarkerSpg);
-local statMarkerBpg = display.newRetinaText("bpg",0,0,"Helvetica",10)
-statMarkerBpg:setTextColor( 0 )	-- black
+	group:insert(statMarkerSpg);
+
+    local statMarkerBpg = display.newRetinaText("bpg",0,0,"Helvetica",10)
+    statMarkerBpg:setTextColor( 0 )	-- black
 	statMarkerBpg:setReferencePoint( display.TopLeftReferencePoint )
 	statMarkerBpg.x = bpgDisplay.x + bpgDisplay.width - statMarkerBpg.width
 	statMarkerBpg.y = bpgDisplay.y + bpgDisplay.height - 5;	
     group:insert(statMarkerBpg);
-local compCats = " Yr  Tm GP  MPG  PPG FG% FT% 3P%  RPG  APG SPG BPG"
 
-   	 	local catText = display.newRetinaText( compCats, 18, 0, "Monaco", 10 )
-   	 	catText:setTextColor( 0 )	
-    	catText:setReferencePoint( display.CenterLeftReferencePoint )
-    	catText.y = collegeDisplay.y + collegeDisplay.height + 10
-    	catText.x = 7
-    	    group:insert(catText);
-    		local listOptions = {
+    -- Create some text that will serve as the 'header' for the stat table.
+    
+    local compCats = " Yr  Tm GP  MPG  PPG FG% FT% 3P%  RPG  APG SPG BPG"
+
+   	local catText = display.newRetinaText( compCats, 18, 0, "Monaco", 10 )
+   	catText:setTextColor( 0 )	
+    catText:setReferencePoint( display.CenterLeftReferencePoint )
+    catText.y = collegeDisplay.y + collegeDisplay.height + 10
+    catText.x = 7
+    group:insert(catText);
+    		
+    local listOptions = {
         top = 160 ,-- 145, --was 44
         height = 270,
         maskFile = "mask-270.png",
         bgColor = { 255, 255, 255, 255 };
 	}
  
-
+    -- Draw a horizontal line under the column headers
 	
-	
-	--draw some columns
-	
-local baseHeight = collegeDisplay.y + collegeDisplay.height
+    local baseHeight = collegeDisplay.y + collegeDisplay.height
 	local horizLine = display.newLine( 0,baseHeight+1, 320,baseHeight+1 )
 	horizLine:setColor( 0, 0, 0, 255 )
+	group:insert(horizLine);
 	
-	    group:insert(horizLine);
+	-- Draw the tableview for the statistics
+	
+	teamSeasonsList = widget.newTableView( listOptions )
+	group:insert(teamSeasonsList);
+	
+	-- Draw some colored columns to differentiate the columns visually
 	
 	local barHeight = 480 - baseHeight - 50;
-	
-		teamSeasonsList = widget.newTableView( listOptions )
-		group:insert(teamSeasonsList);
-		local bg1 = display.newRect( 0,baseHeight , 30, barHeight )
+	local bg1 = display.newRect( 0,baseHeight , 30, barHeight )
 	bg1:setReferencePoint( display.TopLeftReferencePoint )
 	bg1:setFillColor( 0,0,200,30); 
-	    group:insert(bg1);
+	group:insert(bg1);
+	
 	local bg2 = display.newRect( 52, baseHeight, 18, barHeight )
 	bg2:setReferencePoint( display.TopLeftReferencePoint )
 	bg2:setFillColor( 0,0,200,30); 
-	    group:insert(bg2);
+	group:insert(bg2);
+	
 	local bg3 = display.newRect( 102, baseHeight, 30, barHeight )
 	bg3:setReferencePoint( display.TopLeftReferencePoint )
 	bg3:setFillColor( 0,0,200,30); 
-	    group:insert(bg3);
+	group:insert(bg3);
+	
 	local bg4 = display.newRect( 156, baseHeight, 23, barHeight )
 	bg4:setReferencePoint( display.TopLeftReferencePoint )
 	bg4:setFillColor( 0,0,200,30); 
-	    group:insert(bg4);
+	group:insert(bg4);
+	
 	local bg5 = display.newRect( 204, baseHeight, 30, barHeight )
 	bg5:setReferencePoint( display.TopLeftReferencePoint )
 	bg5:setFillColor( 0,0,200,30); 
-	    group:insert(bg5);
+	group:insert(bg5);
+	
 	local bg6 = display.newRect( 266, baseHeight, 23, barHeight )
 	bg6:setReferencePoint( display.TopLeftReferencePoint )
 	bg6:setFillColor( 0,0,200,30); 
 	-- onEvent listener for the tableView
-	    group:insert(bg6);
+	group:insert(bg6);
 	
+	-- Draw another horizontal line with a shadow effect
 	local horizLineB = display.newLine( 0,baseHeight + 20, 320,baseHeight + 20 )
 	horizLineB:setColor( 0, 0, 0, 255 )
-	    group:insert(horizLineB);
+	group:insert(horizLineB);
 	local shadow = display.newImage( "shadow.png" )
-shadow:setReferencePoint( display.TopLeftReferencePoint )
-shadow.y = baseHeight+20
-shadow.xScale = 320
-shadow.alpha = 0.45
+    shadow:setReferencePoint( display.TopLeftReferencePoint )
+    shadow.y = baseHeight+20
+    shadow.xScale = 320
+    shadow.alpha = 0.45
     group:insert(shadow);
 
 	
@@ -286,29 +334,33 @@ shadow.alpha = 0.45
  
         elseif event.phase == "release" then
  
-                if not row.isCategory then
+            if not row.isCategory then
                 
-                --first, check for 'TOT' 
-                  local t = split(event.target.id);
-                  
-                  if (t[2] ~= "TOT") then
+                -- Decompact the row information
+                
+                local t = split(event.target.id);
+            
+                -- First, check for 'TOT' - we only want to go to a teamseason page if the team is real, and not a row representing one or more teams
+                -- Note that the '~' symbol in Lua means "NOT", much like "!" in other languages.
+                if (t[2] ~= "TOT") then
                 	updateHistory(currentScene);
-                        -- reRender property tells row to refresh if still onScreen when content moves
-                        row.reRender = true
-                        local t = split(event.target.id);
-		local year = t[1]
-		local team = t[2]
-                        whichTeamSeason =year;
-                        whichYear = year;
-                        whichTeam = team;
-               			--goto a particular season's roster
+                    -- reRender property tells row to refresh if still onScreen when content moves
+                    row.reRender = true
+                    local t = split(event.target.id);
+		            local year = t[1]
+		            local team = t[2]
+                    whichTeamSeason =year;
+                    whichYear = year;
+                    whichTeam = team;
                		
-                        storyboard.gotoScene( "teamseason" );
+               		 -- Go to a particular season's roster
+               		
+                    storyboard.gotoScene( "teamseason" );
                 end
-                end
+            end
         end
  
- 	       return true
+ 	   return true
 	end
  
  	
@@ -317,9 +369,7 @@ shadow.alpha = 0.45
         local row = event.target
         local rowGroup = event.view
         local teamName;
-        
-   
-       
+           
         local gp;
         local ppg;
         local fgp;
@@ -331,10 +381,10 @@ shadow.alpha = 0.45
         local bpg;
         local team;
         local year;
-        --this is where you'll look up the individual stats for each season
-		--first, extract the team and year from the id field
-		--local inputTeam = string.sub(event.target.id,6,8) 
-		--local inputYear = string.sub(event.target.id,1,4)
+        
+        -- This is where we draw each row (each representing a season) in the player's stat table
+        -- First decompact the row's information stored in the id field
+	    
 		t = split(event.target.id);
 		year = t[1]
 		team = t[2]
@@ -349,29 +399,22 @@ shadow.alpha = 0.45
 		spg = t[11];
 		bpg = t[12];
 		
-		
-		
-	year = "'"..computeNextSeason(year-1);
+	    year = "'"..computeNextSeason(year-1);
 			
-
-	local compStats = year .. " " .. team .. " " .. gp .. " " .. mpg .. " " .. ppg .. " " .. fgp .. " " .. ftp .. " " .. tpp .. " " .. rpg .. " " .. apg .. " " .. spg .. " " .. bpg;
+        -- Draw the stats onscreen in a line in a monospace font
+        
+	    local compStats = year .. " " .. team .. " " .. gp .. " " .. mpg .. " " .. ppg .. " " .. fgp .. " " .. ftp .. " " .. tpp .. " " .. rpg .. " " .. apg .. " " .. spg .. " " .. bpg;
    	 	local text = display.newRetinaText( compStats, 18, 0, "Monaco", 10 )
     	text:setReferencePoint( display.CenterLeftReferencePoint )
     	text.y = row.height * 0.5
-    	--local textWL = display.newRetinaText(compWL, 18, 0, "Helvetica-Bold", --12);
-    	--textWL:setReferencePoint( display.CenterLeftReferencePoint )
-    	--textWL.y = row.height * 0.5
-        
+    	
     	if not row.isCategory then
     		text.x = 7
     		text:setTextColor( 0 )
-    	--	textWL.x = 250;
-     	--	textWL:setTextColor(150);
     	end
  
         -- must insert everything into event.view: (tableView requirement)
         rowGroup:insert( text )
-   --   	rowGroup:insert(textWL);
 	end
  
 	-- Create a row for each season the player played and add it to the tableView:
@@ -381,47 +424,51 @@ shadow.alpha = 0.45
  		local team = row.team;
  		local year = row.year;
  		local gp = row.gp
-	--special case for games being under ten
-	if (gp < 10) then
-	gp = " "..gp;
-	end
-	local team = row.team;
-	local mpg = formatStat(row.minutes/row.gp,2);
-	local ppg = formatStat(row.pts / row.gp,2);
-	local fgp = formatPerc(row.fgm/row.fga,1);
 	
+	    -- Special case for games being under ten
 	
+	    if (gp < 10) then
+	        gp = " "..gp;
+	    end
 	
+	    local team = row.team;
+	    local mpg = formatStat(row.minutes/row.gp,2);
+	    local ppg = formatStat(row.pts / row.gp,2);
+	    local fgp = formatPerc(row.fgm/row.fga,1);
+	    local ftp = row.ftm / row.fta
 	
-	local ftp = row.ftm / row.fta
+	    -- Special case formatting for free throw percentage (we only want three characters, and some players have 0% or 100% ft%)
+	    -- Note this may still be problematic in certain edge cases.
+	    
+	    if (ftp == 1) then
+	        ftp = "1.0";
 	
-	if (ftp == 1) then
-	ftp = "1.0";
+	    elseif (row.ftm == 0) then
+	        ftp = ".00";
 	
-	elseif (row.ftm == 0) then
-	ftp = ".00";
-	
-	else
-		ftp = formatPerc(ftp);
+	    else
+		    ftp = formatPerc(ftp);
 		
-	end
+	    end
 	
-	local tpp;
-	--special case to account for seasons before the advent of the 3-pointer.
-	if (row.tpm > 0) then
-	tpp = formatPerc(row.tpm/row.tpa);
-	else
-	tpp = ".00";
-	end
+	    local tpp;
+	    
+	    -- Special case to account for seasons before the advent of the 3-pointer.
 	
-	local rpg = formatStat(row.reb / row.gp,2);
-	local apg = formatStat(row.asts / row.gp,2);
-	local spg = formatStat(row.stl / row.gp,1);
-	local bpg = formatStat(row.blk / row.gp,1);
- 		--trying to combine team and year into one ID
+	    if (row.tpm > 0) then
+	        tpp = formatPerc(row.tpm/row.tpa);
+	    else
+	        tpp = ".00";
+	    end
+	
+	    local rpg = formatStat(row.reb / row.gp,2);
+	    local apg = formatStat(row.asts / row.gp,2);
+	    local spg = formatStat(row.stl / row.gp,1);
+	    local bpg = formatStat(row.blk / row.gp,1);
+ 		
+ 		-- Trying to combine team and year into one ID
  		id = row.year .. "," .. team .. "," .. gp .. "," .. mpg .. "," .. ppg .. "," .. fgp .. "," .. ftp .. "," .. tpp .. "," .. rpg .. "," .. apg .. "," .. spg .. "," .. bpg;
-
-      --  print ("creating a row for " .. id);
+ 		
         -- make the 25th item a category (not being used right now)
         if i == 25 then
                 isCategory = true; rowHeight = 24; rowColor={ 70, 70, 130, 255 }; lineColor={0,0,0,255}
@@ -431,8 +478,11 @@ shadow.alpha = 0.45
         if i == 45 then
                 isCategory = true; rowHeight = 24; rowColor={ 70, 70, 130, 255 }; lineColor={0,0,0,255}
         end
-    rowColor={ 70, 70, 130, 0 };
-        -- function below is responsible for creating the row
+        
+        rowColor={ 70, 70, 130, 0 };
+        
+        -- Function below is responsible for creating the row
+        
         teamSeasonsList:insertRow{
                 onEvent=onRowTouch,
                 id=id,
@@ -448,14 +498,15 @@ shadow.alpha = 0.45
 	--	group:insert( list )
 	--	group:insert( title )
 
-	--create the NavBar with the appropriate title
-	--local teamName = lookupTeamName(whichTeam, 2);
+	
+	
 	local theName = lookupPlayerName(whichPlayer);
 	
-	
+	-- Create the NavBar with the appropriate title
 	createNavBar(theName);
-displayBackButton();
-	--insert everything into the group to be changed on scene changes
+    displayBackButton();
+	
+	-- Insert everything into the group to be changed on scene changes
     group:insert(navBar);
     group:insert(navHeader);
     group:insert(backButton)
@@ -475,7 +526,7 @@ function scene:destroyScene( event )
 end
 
 -----------------------------------------------------------------------------------------
--- END OF YOUR IMPLEMENTATION
+-- Storyboard API Listeners.
 -----------------------------------------------------------------------------------------
 
 -- "createScene" event is dispatched if scene's view does not exist

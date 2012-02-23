@@ -1,25 +1,18 @@
 -----------------------------------------------------------------------------------------
 --
--- teamseasons.lua
--- The view that appears when a particular team is clicked from the list of teams. A list of a given team's seasons.
+-- teamseason.lua
+-- The view that appears when a particular team season is clicked from the list of teamseasons. A list of a given season's players for a particular team.
 --
 -----------------------------------------------------------------------------------------
 local storyboard = require( "storyboard" )
 local scene = storyboard.newScene()
 
------------------------------------------------------------------------------------------
--- BEGINNING OF YOUR IMPLEMENTATION
--- 
--- NOTE: Code outside of listener functions (below) will only be executed once,
---		 unless storyboard.removeScene() is called.
--- 
------------------------------------------------------------------------------------------
-
 -- Called when the scene's view does not exist:
 function scene:createScene( event )
 	local group = self.view
 	
-     local blah = display.newRetinaText( "blah", 18, 0, "Helvetica-Bold", 12 )
+	-- Placeholder
+    local blah = display.newRetinaText( "blah", 18, 0, "Helvetica-Bold", 12 )
 	group:insert( blah )
 	blah.isVisible = false;
 
@@ -30,7 +23,7 @@ function scene:enterScene( event )
 
 	local group = self.view
 	local widget = require "widget"
-currentScene = "teamseason" .. ","..whichTeam ..","..whichTeamSeason;
+    currentScene = "teamseason" .. ","..whichTeam ..","..whichTeamSeason;
 
 	local listOptions = {
         top = 44,
@@ -53,18 +46,18 @@ currentScene = "teamseason" .. ","..whichTeam ..","..whichTeamSeason;
         elseif event.phase == "release" then
  
                 if not row.isCategory then
-                updateHistory(currentScene);
+                        updateHistory(currentScene);
                         -- reRender property tells row to refresh if still onScreen when content moves
                         row.reRender = true
                         local t = split(event.target.id);
-                       whichPlayer = t[1];
+                        whichPlayer = t[1];
                        
                			--goto a particular season's roster
                         storyboard.gotoScene( "player_page" );
                 end
         end
  
- 	       return true
+ 	   return true
 	end
  
 	-- onRender listener for the tableView that renders each row
@@ -73,25 +66,26 @@ currentScene = "teamseason" .. ","..whichTeam ..","..whichTeamSeason;
         local rowGroup = event.view
        
 
-	local ilkid
-	local playerFirstName
-	local playerLastName
-	local compStats
-	--decompact here
---    id = ilkid .. ","..playerFirstName..","..playerLastName..","..compStats;   
-	t = split(event.target.id);
-		 ilkid = t[1]
+	    local ilkid
+	    local playerFirstName
+	    local playerLastName
+	    local compStats
+	    -- Decompact the row's information into seperate fields   
+	    t = split(event.target.id);
+		
+		ilkid = t[1]
 		playerFirstName = t[2]
 		playerLastName = t[3] 
 		compStats = t[4] 
+		
 		local totalName
 		
 		totalName = playerFirstName .. " " .. playerLastName;
 	
-	
-   	 	local text = display.newRetinaText( totalName, 18, 0, "Helvetica-Bold", 12 )
+	    local text = display.newRetinaText( totalName, 18, 0, "Helvetica-Bold", 12 )
     	text:setReferencePoint( display.CenterLeftReferencePoint )
     	text.y = row.height * 0.5
+    	
     	local textStats = display.newRetinaText(compStats, 18, 0, "Monaco", 10);
     	textStats:setReferencePoint( display.CenterLeftReferencePoint )
     	textStats.y = row.height * 0.5
@@ -112,8 +106,8 @@ currentScene = "teamseason" .. ","..whichTeam ..","..whichTeamSeason;
 	for row in db:nrows("SELECT * FROM player_regular_season WHERE team = '"..whichTeam.."' AND year = '"..whichTeamSeason.."' ORDER BY minutes DESC, gp DESC, pts DESC" ) do
     	local rowHeight, rowColor, lineColor, isCategory, id
  		rowHeight = 40;
- 	 local teamName;
-        
+ 	    
+ 	    local teamName;
         local playerFirstName;
         local playerLastName;
         local gp;
@@ -123,32 +117,30 @@ currentScene = "teamseason" .. ","..whichTeam ..","..whichTeamSeason;
         local spg;
         local bpg;
         
- 	playerFirstName = row.firstname;
-	playerLastName = row.lastname;
-	gp = row.gp
-	--special case for games being under ten
-	if (gp < 10) then
-	gp = " "..gp;
-	end
-	ppg = formatStat(row.pts / row.gp,2);
-	rpg = formatStat(row.reb / row.gp,2);
-	apg = formatStat(row.asts / row.gp,2);
-	spg = formatStat(row.stl / row.gp,1);
-	bpg = formatStat(row.blk / row.gp,1);
+ 	    playerFirstName = row.firstname;
+	    playerLastName = row.lastname;
+	    gp = row.gp
 	
-	 
-
+	    -- Special case for games being under ten
+	    if (gp < 10) then
+	        gp = " "..gp;
+	    end
 	
+	    ppg = formatStat(row.pts / row.gp,2);
+	    rpg = formatStat(row.reb / row.gp,2);
+	    apg = formatStat(row.asts / row.gp,2);
+	    spg = formatStat(row.stl / row.gp,1);
+	    bpg = formatStat(row.blk / row.gp,1);
 		
-	local totalName = playerFirstName .. " " .. playerLastName;
-	--		losses = row.lost;
-	--print (totalName);	
-	local compStats = gp .. " gp " .. ppg .. " ppg " .. rpg .. " rpg " .. apg .. " apg ";	--let's combine the id to include everything
+	    local totalName = playerFirstName .. " " .. playerLastName;
+	
+	    local compStats = gp .. " gp " .. ppg .. " ppg " .. rpg .. " rpg " .. apg .. " apg ";	--let's combine the id to include everything
        
-    local tempIlkid
-    tempIlkid = row.ilkid;
+        local tempIlkid
+        tempIlkid = row.ilkid;
     
-    id = tempIlkid .. ","..playerFirstName..","..playerLastName..","..compStats;   
+        id = tempIlkid .. ","..playerFirstName..","..playerLastName..","..compStats;   
+        
         -- make the 25th item a category (not being used right now)
         if i == 25 then
                 isCategory = true; rowHeight = 24; rowColor={ 70, 70, 130, 255 }; lineColor={0,0,0,255}
@@ -175,13 +167,16 @@ currentScene = "teamseason" .. ","..whichTeam ..","..whichTeamSeason;
 	--	group:insert( list )
 	--	group:insert( title )
 
-	--create the NavBar with the appropriate title
+	
 	local teamName = lookupTeamName(whichTeam, 2);
 	local nextSeason = computeNextSeason(whichTeamSeason);
 	local seasonTitle = "'" ..computeNextSeason(whichTeamSeason-1) .. "-"..nextSeason
 	local compTitle = seasonTitle .. " "..teamName
+	
+	-- Create the NavBar with the appropriate title
 	createNavBar(compTitle);
-displayBackButton();
+    displayBackButton();
+	
 	--insert everything into the group to be changed on scene changes
     group:insert(navBar);
     group:insert(navHeader);
@@ -202,7 +197,7 @@ function scene:destroyScene( event )
 end
 
 -----------------------------------------------------------------------------------------
--- END OF YOUR IMPLEMENTATION
+-- Storyboard API Listeners.
 -----------------------------------------------------------------------------------------
 
 -- "createScene" event is dispatched if scene's view does not exist

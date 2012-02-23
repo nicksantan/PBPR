@@ -8,25 +8,14 @@
 local storyboard = require( "storyboard" )
 local scene = storyboard.newScene()
 
------------------------------------------------------------------------------------------
--- BEGINNING OF YOUR IMPLEMENTATION
--- 
--- NOTE: Code outside of listener functions (below) will only be executed once,
---		 unless storyboard.removeScene() is called.
--- 
------------------------------------------------------------------------------------------
-
 -- Called when the scene's view does not exist:
 function scene:createScene( event )
-	local group = self.view
+    local group = self.view
 	
-	
-	  local blah = display.newRetinaText( "blah", 18, 0, "Helvetica-Bold", 12 )
+	-- This is a placeholder - the storyboard API requires at least one display object to be present in a scene.
+	local blah = display.newRetinaText( "blah", 18, 0, "Helvetica-Bold", 12 )
 	group:insert( blah )
 	blah.isVisible = false;
-	
-	
-
 	
 end
 
@@ -57,7 +46,7 @@ function scene:enterScene( event )
         elseif event.phase == "release" then
  
                 if not row.isCategory then
-                updateHistory(currentScene);
+                        updateHistory(currentScene);
                         -- reRender property tells row to refresh if still onScreen when content moves
                         row.reRender = true
                         print( "You touched row #" .. event.index )
@@ -153,16 +142,8 @@ function scene:enterScene( event )
 
 	--create the NavBar with the appropriate title
 	createNavBar("Teams");
+    displayBackButton();
  
- displayBackButton();
- 
- 
- 	
- 
- 
-    -- Change the button's label text:
-  	--  myButton:setLabel( "My Button" )
-
 	--insert everything into the group to be changed on scene changes
     group:insert(navBar);
     group:insert(navHeader);
@@ -183,12 +164,10 @@ end
 function scene:destroyScene( event )
 	local group = self.view
 	
-	-- INSERT code here (e.g. remove listeners, remove widgets, save state variables, etc.)
-	
 end
 
 -----------------------------------------------------------------------------------------
--- END OF YOUR IMPLEMENTATION
+-- Storyboard API Listeners
 -----------------------------------------------------------------------------------------
 
 -- "createScene" event is dispatched if scene's view does not exist

@@ -7,19 +7,12 @@
 local storyboard = require( "storyboard" )
 local scene = storyboard.newScene()
 
------------------------------------------------------------------------------------------
--- BEGINNING OF YOUR IMPLEMENTATION
--- 
--- NOTE: Code outside of listener functions (below) will only be executed once,
---		 unless storyboard.removeScene() is called.
--- 
------------------------------------------------------------------------------------------
-
 -- Called when the scene's view does not exist:
 function scene:createScene( event )
 	local group = self.view
 	
-     local blah = display.newRetinaText( "blah", 18, 0, "Helvetica-Bold", 12 )
+	-- A placeholder.
+    local blah = display.newRetinaText( "blah", 18, 0, "Helvetica-Bold", 12 )
 	group:insert( blah )
 	blah.isVisible = false;
 
@@ -31,7 +24,7 @@ function scene:enterScene( event )
 	local group = self.view
 	local widget = require "widget"
     currentScene = "teamseasons" .. ",".. whichTeam;
-    --a test change
+    
 	local listOptions = {
         top = 44,
         height = 386,
@@ -53,17 +46,18 @@ function scene:enterScene( event )
         elseif event.phase == "release" then
  
                 if not row.isCategory then
-                updateHistory(currentScene);
+                        updateHistory(currentScene);
                         -- reRender property tells row to refresh if still onScreen when content moves
                         row.reRender = true
                         whichTeamSeason = event.target.id;
-               			--goto a particular season's roster
+               			
+               			-- Go to a particular season's roster
                			
                         storyboard.gotoScene( "teamseason" );
                 end
         end
  
- 	       return true
+ 	   return true
 	end
  
 	-- onRender listener for the tableView that renders each row
@@ -73,14 +67,13 @@ function scene:enterScene( event )
         local teamName;
         local wins;
         local losses;
+		
 		--look up each year a team has existed and extract the wins and losses
 		for row in db:nrows("SELECT * FROM team_seasons WHERE team =  '"..whichTeam.."' AND year = '"..event.target.id.."'") do
 			wins = row.won;
 			losses = row.lost;
 		end
 		
-		
-	
 		--compute the text to display the team's record for each season
 		local nextSeason = computeNextSeason(event.target.id);
 		local compWL = wins .. " - " .. losses;
@@ -139,7 +132,8 @@ function scene:enterScene( event )
 	--create the NavBar with the appropriate title
 	local teamName = lookupTeamName(whichTeam, 3);
 	createNavBar(teamName);
-displayBackButton();
+    displayBackButton();
+	
 	--insert everything into the group to be changed on scene changes
     group:insert(navBar);
     group:insert(navHeader);
@@ -163,7 +157,7 @@ function scene:destroyScene( event )
 end
 
 -----------------------------------------------------------------------------------------
--- END OF YOUR IMPLEMENTATION
+-- Storyboard API listeners.
 -----------------------------------------------------------------------------------------
 
 -- "createScene" event is dispatched if scene's view does not exist

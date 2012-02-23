@@ -152,7 +152,7 @@ function scene:enterScene( event )
 	--create the NavBar with the appropriate title
 	
 	createNavBar("Rookies of the Year");
-displayBackButton();
+    displayBackButton();
 	--insert everything into the group to be changed on scene changes
     group:insert(navBar);
     group:insert(navHeader);
@@ -173,7 +173,7 @@ function scene:destroyScene( event )
 end
 
 -----------------------------------------------------------------------------------------
--- END OF YOUR IMPLEMENTATION
+-- Listeners required for Storyboard API
 -----------------------------------------------------------------------------------------
 
 -- "createScene" event is dispatched if scene's view does not exist
